@@ -59,8 +59,9 @@ exclude-result-prefixes="#all">
     <xsl:param name="step-count" select="30" as="xs:integer"/> <!-- number of iteration steps -->
     <xsl:param name="preserveAspectRatio" as="xs:string?"/>
     <xsl:param name="spring-stiffness" select="0.01" as="xs:double"/>
-    <xsl:param name="spring-length" select="50" as="xs:double"/> <!-- ideal spring length -->
-    <xsl:param name="padding" select="$spring-length div 2" as="xs:double"/>
+    <xsl:param name="spring-length" as="xs:double?"/> <!-- ideal spring length; derived from the frame area and node count when absent -->
+    <xsl:param name="node-radius" select="15" as="xs:double"/>
+    <xsl:param name="padding" select="2 * $node-radius" as="xs:double"/> <!-- viewBox margin around the outermost nodes -->
     <xsl:param name="width" select="1000" as="xs:integer"/> <!-- drawing width -->
     <xsl:param name="height" select="800" as="xs:integer"/> <!-- drawing height -->
 
@@ -107,7 +108,7 @@ exclude-result-prefixes="#all">
     <xsl:template match="rdf:RDF" mode="ac:SVG">
         <xsl:param name="step-count" as="xs:integer"/>
         <xsl:param name="spring-stiffness" select="$spring-stiffness" as="xs:double" tunnel="yes"/>
-        <xsl:param name="spring-length" select="$spring-length" as="xs:double" tunnel="yes"/>
+        <xsl:param name="spring-length" select="$spring-length" as="xs:double?" tunnel="yes"/>
         <xsl:param name="viewBox" as="xs:string?"/>
         <xsl:param name="preserveAspectRatio" select="$preserveAspectRatio" as="xs:string?"/>
         <xsl:param name="height" as="xs:string?"/>
@@ -200,7 +201,7 @@ exclude-result-prefixes="#all">
 
     <xsl:template match="@rdf:about | @rdf:resource | @rdf:nodeID" mode="ac:SVG">
         <xsl:param name="id" select="generate-id()" as="xs:string"/>
-        <xsl:param name="r" select="15" as="xs:double"/>
+        <xsl:param name="r" select="$node-radius" as="xs:double"/>
         <xsl:param name="random-seed" select="if (../rdf:type/@rdf:*) then random-number-generator(../rdf:type[1]/@rdf:*)?number else ()" as="xs:double?"/>
         <xsl:param name="hsl" select="if ($random-seed) then 'hsl(' || $random-seed * 360 || ', 50%, 70%)' else ()" as="xs:string?"/>
         <xsl:param name="fill" select="if ($hsl) then $hsl else '#acf'" as="xs:string"/>
@@ -340,15 +341,18 @@ exclude-result-prefixes="#all">
 
     <!-- positioning loop.
          Fruchterman-Reingold as the cited paper defines it (repulsion k^2/d,
-         attraction d^2/k along adjacency, temperature-capped displacement with
-         t - t/(step+1) cooling, frame clamping, circle seed), with the machinery
-         rebuilt for performance:
+         attraction d^2/k along adjacency, k = sqrt(area/n) unless a spring length
+         is given, temperature-capped displacement with linear cooling, frame
+         clamping, circle seed), on a frame that grows with the node count, followed
+         by exact separation passes that push any two nodes closer than the minimum
+         distance apart, with the machinery rebuilt for performance:
          - positions live in ONE map(xs:string, map(*)) keyed by node id, so lookups
            are O(1) map:get where the former sequence-of-maps predicate scans
            ($seq[?node-id eq $id]) made every step O(n^3);
          - each step buckets the nodes into a spatial grid of 0.7-spring-length cells
-           and repels only against a deterministic sample (at most 16) of the 3x3
-           cell neighborhood - a ~2k cutoff radius, the customary grid approximation
+           and repels against every node sharing the cell plus a deterministic sample
+           (at most 16) of the eight surrounding cells - a ~2k cutoff radius, the
+           customary grid approximation, exact where crowding is felt
            of FR - instead of all pairs;
          - the per-node displacement is a single XPath expression (per-pair XSLT
            instructions dominated the profile), and repulsion needs no sqrt in the
@@ -374,11 +378,24 @@ exclude-result-prefixes="#all">
     <xsl:template name="ac:SVGPositioningLoop">
         <xsl:param name="svg" as="document-node()"/>
         <xsl:param name="count" as="xs:integer"/>
+        <xsl:param name="spring-length" as="xs:double?" tunnel="yes"/>
         <xsl:param name="temperature" select="$width div 10" as="xs:double"/>
 
         <xsl:variable name="force-nodes" select="$svg/svg:svg//svg:g[@class = ('subject', 'object')]" as="element()*"/>
         <xsl:variable name="node-ids" select="$force-nodes/@id ! string(.)" as="xs:string*"/>
         <xsl:variable name="force-node-count" select="count($force-nodes)" as="xs:integer"/>
+        <!-- Fruchterman-Reingold's k = sqrt(area / n), floored at three node diameters so a
+             small graph does not crowd; an explicit spring length overrides -->
+        <xsl:variable name="min-distance" select="2.5 * $node-radius" as="xs:double"/>
+        <!-- the frame grows with the node count so that every node has a square of three minimum
+             distances to itself; below that count (63 at the defaults) the frame is as given. The
+             viewBox is fitted to the nodes afterwards, so the frame only decides how much room the
+             forces have -->
+        <xsl:variable name="frame-scale" select="max((1, math:sqrt($force-node-count * 9 * $min-distance * $min-distance div ($width * $height))))" as="xs:double"/>
+        <xsl:variable name="width" select="xs:integer(round($width * $frame-scale))" as="xs:integer"/>
+        <xsl:variable name="height" select="xs:integer(round($height * $frame-scale))" as="xs:integer"/>
+        <xsl:variable name="k" select="if (exists($spring-length)) then $spring-length
+            else max((6 * $node-radius, math:sqrt($width * $height div max((1, $force-node-count)))))" as="xs:double"/>
         <!-- initial placement on a circle, in document order -->
         <xsl:variable name="seed" as="map(*)">
             <xsl:map>
@@ -415,16 +432,36 @@ exclude-result-prefixes="#all">
                 </xsl:on-completion>
 
                 <xsl:next-iteration>
-                    <xsl:with-param name="positions" select="ac:force-step($positions, $node-ids, $adjacency, $spring-length, $width, $height, $temperature)"/>
+                    <xsl:with-param name="positions" select="ac:force-step($positions, $node-ids, $adjacency, $k, $width, $height, $temperature)"/>
                     <xsl:with-param name="step" select="$step + 1"/>
-                    <!-- cooling down temperature over time -->
-                    <xsl:with-param name="temperature" select="$temperature - $temperature div ($step + 1)"/>
+                    <!-- linear cooling, as the paper has it: the movement budget scales with the step count -->
+                    <xsl:with-param name="temperature" select="($width div 10) * (1 - $step div $count)"/>
                 </xsl:next-iteration>
             </xsl:iterate>
         </xsl:variable>
 
+        <!-- the forces approximate the far field by sampling; overlaps that survive are resolved
+             exactly, in as many passes as it takes up to the cap - a small graph clears in a few -->
+        <xsl:variable name="separated" as="map(*)">
+            <xsl:iterate select="1 to 60">
+                <xsl:param name="positions" select="$positions" as="map(*)"/>
+                <xsl:on-completion select="$positions"/>
+                <xsl:variable name="next" select="ac:separated($positions, $node-ids, $min-distance)" as="map(*)"/>
+                <xsl:choose>
+                    <xsl:when test="every $id in $node-ids satisfies ($next($id)?x eq $positions($id)?x and $next($id)?y eq $positions($id)?y)">
+                        <xsl:break select="$positions"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:next-iteration>
+                            <xsl:with-param name="positions" select="$next"/>
+                        </xsl:next-iteration>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:iterate>
+        </xsl:variable>
+
         <xsl:apply-templates select="$svg" mode="ac:SVGPositioning">
-            <xsl:with-param name="positions" select="$positions" tunnel="yes"/>
+            <xsl:with-param name="positions" select="$separated" tunnel="yes"/>
         </xsl:apply-templates>
     </xsl:template>
 
@@ -482,14 +519,16 @@ exclude-result-prefixes="#all">
                 $px := $pv?x, $py := $pv?y,
                 $cx := floor($px div $cell-size),
                 $cy := floor($py div $cell-size),
-                (: repulsion sample: at most 3 nodes from each of the 3x3 cells,
-                   at most 16 total - deterministic (grid lists build in node-id
-                   order), spatially stratified, and bounded even when the canvas
-                   packs most of the graph into one cell :)
-                $neighbors := subsequence(
-                    (for $dx in (-1, 0, 1), $dy in (-1, 0, 1)
-                        return subsequence($grid(string($cx + $dx) || ',' || string($cy + $dy)), 1, 3))[. ne $v],
-                    1, 16),
+                (: repulsion: every node sharing the cell, so crowding is always felt
+                   whatever the node order, plus at most 3 nodes from each of the eight
+                   surrounding cells, at most 16 - deterministic (grid lists build in
+                   node-id order) and spatially stratified :)
+                $neighbors := ($grid(string($cx) || ',' || string($cy))[. ne $v],
+                    subsequence(
+                        (for $dx in (-1, 0, 1), $dy in (-1, 0, 1)
+                            return if ($dx eq 0 and $dy eq 0) then ()
+                                else subsequence($grid(string($cx + $dx) || ',' || string($cy + $dy)), 1, 3)),
+                        1, 16)),
                 $k2 := $spring-length * $spring-length,
                 (: repulsion force coefficient (k^2/d), applied as delta * k^2 / d^2 -
                    sqrt-free; coincident nodes separate along a deterministic
@@ -526,6 +565,40 @@ exclude-result-prefixes="#all">
                         $e := ($xc * $xc) div ($a * $a) + ($yc * $yc) div ($b * $b),
                         $scale := if ($e gt 1) then 1 div math:sqrt($e) else 1
                     return map{ 'x': $xc * $scale + $a, 'y': $yc * $scale + $b }"/>
+    </xsl:function>
+
+    <!-- one pass of pushing every pair closer than the minimum distance apart, each by half the shortfall -->
+    <xsl:function name="ac:separated" as="map(*)">
+        <xsl:param name="positions" as="map(*)"/>
+        <xsl:param name="node-ids" as="xs:string*"/>
+        <xsl:param name="min-distance" as="xs:double"/>
+
+        <xsl:variable name="grid" as="map(*)">
+            <xsl:map>
+                <xsl:for-each-group select="$node-ids" group-by="ac:grid-cell($positions(.), $min-distance)">
+                    <xsl:map-entry key="current-grouping-key()" select="current-group()"/>
+                </xsl:for-each-group>
+            </xsl:map>
+        </xsl:variable>
+        <xsl:map>
+            <xsl:for-each select="$node-ids">
+                <xsl:map-entry key="." select="
+                    let $v := ., $pv := $positions($v), $px := $pv?x, $py := $pv?y,
+                        $cx := floor($px div $min-distance), $cy := floor($py div $min-distance),
+                        $near := (for $dx in (-1, 0, 1), $dy in (-1, 0, 1)
+                            return $grid(string($cx + $dx) || ',' || string($cy + $dy)))[. ne $v],
+                        $terms := (for $u in $near return
+                            let $pu := $positions($u), $dx := $px - $pu?x, $dy := $py - $pu?y,
+                                $d2 := $dx * $dx + $dy * $dy
+                            return if ($d2 ge $min-distance * $min-distance) then ()
+                                else if ($d2 eq 0) then (if ($v lt $u) then $min-distance div 2 else -$min-distance div 2, 0)
+                                else let $d := math:sqrt($d2), $push := ($min-distance - $d) div (2 * $d)
+                                    return ($dx * $push, $dy * $push)),
+                        $fx := sum($terms[position() mod 2 eq 1]),
+                        $fy := sum($terms[position() mod 2 eq 0])
+                    return if (empty($terms)) then $pv else map{ 'x': $px + $fx, 'y': $py + $fy }"/>
+            </xsl:for-each>
+        </xsl:map>
     </xsl:function>
 
     <xsl:template match="svg:g[@class = ('subject', 'object')]" mode="ac:SVGPositioning" priority="1">
