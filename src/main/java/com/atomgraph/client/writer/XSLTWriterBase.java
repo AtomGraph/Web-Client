@@ -17,7 +17,6 @@ package com.atomgraph.client.writer;
 
 import com.atomgraph.client.util.RDFSourceResolver;
 import com.atomgraph.client.vocabulary.AC;
-import com.atomgraph.client.vocabulary.LDT;
 import com.atomgraph.core.util.Link;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -148,8 +147,6 @@ public abstract class XSLTWriterBase
         
         Map<QName, XdmValue> params = new HashMap<>();
         
-        params.put(new QName("ac", AC.httpHeaders.getNameSpace(), AC.httpHeaders.getLocalName()), new XdmAtomicValue(headerMap.toString()));
-        params.put(new QName("ac", AC.method.getNameSpace(), AC.method.getLocalName()), new XdmAtomicValue(getRequest().getMethod()));
         params.put(new QName("ac", AC.contextUri.getNameSpace(), AC.contextUri.getLocalName()), new XdmAtomicValue(getContextURI()));
      
         try
@@ -161,15 +158,6 @@ public abstract class XSLTWriterBase
             List<URI> modes = getModes(getSupportedNamespaces()); // check if explicit mode URL parameter is provided
             if (!modes.isEmpty()) params.put(new QName("ac", AC.mode.getNameSpace(), AC.mode.getLocalName()), XdmValue.makeSequence(modes));
 
-            URI ontologyURI = getLinkURI(headerMap, LDT.ontology);
-            if (ontologyURI != null) params.put(new QName("ldt", LDT.ontology.getNameSpace(), LDT.ontology.getLocalName()), new XdmAtomicValue(ontologyURI));
-
-            URI baseURI = getLinkURI(headerMap, LDT.base);
-            if (baseURI != null) params.put(new QName("ldt", LDT.base.getNameSpace(), LDT.base.getLocalName()), new XdmAtomicValue(baseURI));
-
-            String forClassURI = getUriInfo().getQueryParameters().getFirst(AC.forClass.getLocalName());
-            if (forClassURI != null) params.put(new QName("ac", AC.forClass.getNameSpace(), AC.forClass.getLocalName()), new XdmAtomicValue(URI.create(forClassURI)));
-            
             // ordered language preference list from Accept-Language
             List<String> langs = getHttpHeaders().getAcceptableLanguages().stream().
                 map(Locale::getLanguage).
