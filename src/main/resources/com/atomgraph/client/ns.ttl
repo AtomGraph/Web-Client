@@ -4,7 +4,6 @@
 @prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
 @prefix owl:	<http://www.w3.org/2002/07/owl#> .
-@prefix ldt:	<https://www.w3.org/ns/ldt#> .
 
 # ONTOLOGY
 
@@ -25,7 +24,6 @@
     rdfs:isDefinedBy : .
 
 :stylesheet a owl:ObjectProperty ;
-    rdfs:domain ldt:Application ;
     rdfs:label "XSLT stylesheet" ;
     rdfs:isDefinedBy : .
 
