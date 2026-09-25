@@ -76,15 +76,15 @@ public class ProxyRequestFilterTest
         // upstream sends one comma-joined Link line; each link-value must come out as its own header
         // value, because Link.valueOf() (the writer's parser) only reads a single link-value
         Response upstream = Response.ok().
-            header(HttpHeaders.LINK, "<https://remote.example/ns#>; rel=https://www.w3.org/ns/ldt#ontology, <https://remote.example/>; rel=https://www.w3.org/ns/ldt#base").
+            header(HttpHeaders.LINK, "<https://remote.example/ns#>; rel=https://example.org/ns#ontology, <https://remote.example/>; rel=https://example.org/ns#base").
             build();
 
         Response response = filter.overlayHeaders(Response.ok().build(), upstream, true);
         List<Object> linkValues = response.getHeaders().get(HttpHeaders.LINK);
 
         assertEquals(2, linkValues.size());
-        assertEquals("<https://remote.example/ns#>; rel=https://www.w3.org/ns/ldt#ontology", linkValues.get(0).toString());
-        assertEquals("<https://remote.example/>; rel=https://www.w3.org/ns/ldt#base", linkValues.get(1).toString());
+        assertEquals("<https://remote.example/ns#>; rel=https://example.org/ns#ontology", linkValues.get(0).toString());
+        assertEquals("<https://remote.example/>; rel=https://example.org/ns#base", linkValues.get(1).toString());
     }
 
     @Test
