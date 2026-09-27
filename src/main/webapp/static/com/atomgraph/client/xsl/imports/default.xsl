@@ -1125,7 +1125,7 @@ exclude-result-prefixes="#all">
     <xsl:function name="ac:http-error-key" as="xs:string">
         <xsl:param name="status" as="xs:double?"/> <!-- xs:double, not xs:integer: SaxonJS surfaces the response status as a JS number, and integers promote into this but doubles do not promote the other way -->
 
-        <xsl:sequence select="if ($status = 400) then 'http-error-malformed' else if ($status = 401) then 'http-error-unauthorized' else if ($status = 403) then 'http-error-forbidden' else if ($status = 404) then 'http-error-not-found' else if ($status = (502, 503, 504)) then 'http-error-unreachable' else if ($status ge 500) then 'http-error-server' else 'http-error-unknown'"/>
+        <xsl:sequence select="if ($status = 400) then 'http-error-malformed' else if ($status = 401) then 'http-error-unauthorized' else if ($status = 403) then 'http-error-forbidden' else if ($status = 404) then 'http-error-not-found' else if ($status = 413) then 'http-error-too-large' else if ($status = (502, 503, 504)) then 'http-error-unreachable' else if ($status ge 500) then 'http-error-server' else 'http-error-unknown'"/>
     </xsl:function>
 
     <!-- The negative alert every failure surface is built from (design system: Core → Status, InlineAlert).
