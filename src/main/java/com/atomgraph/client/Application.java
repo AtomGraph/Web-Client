@@ -34,6 +34,7 @@ import com.atomgraph.client.filter.request.ProxyRequestFilter;
 import com.atomgraph.client.resource.Root;
 import com.atomgraph.core.provider.QueryParamProvider;
 import com.atomgraph.core.io.ResultSetProvider;
+import com.atomgraph.core.io.SPARQLResultProvider;
 import com.atomgraph.core.io.UpdateRequestProvider;
 import com.atomgraph.client.vocabulary.AC;
 import com.atomgraph.client.writer.ModelXSLTWriter;
@@ -157,6 +158,7 @@ public class Application extends ResourceConfig
         register(new RDFPostMediaTypeInterceptor()); // for application/x-www-form-urlencoded
         register(new ModelProvider());
         register(new ResultSetProvider());
+        register(new SPARQLResultProvider()); // the boolean of an ASK, which ResultSetProvider cannot write
         register(new QueryParamProvider());
         register(new UpdateRequestProvider());
         register(NotFoundExceptionMapper.class);
@@ -216,6 +218,7 @@ public class Application extends ResourceConfig
         clientConfig.register(new ModelProvider());
         clientConfig.register(new DatasetProvider());
         clientConfig.register(new ResultSetProvider());
+        clientConfig.register(new SPARQLResultProvider()); // reads a results body the proxy cannot tell is a boolean
         clientConfig.register(new QueryProvider());
         clientConfig.register(new UpdateRequestProvider());
 
