@@ -18,15 +18,25 @@ package com.atomgraph.client.filter.request;
 
 import java.net.URI;
 import java.util.List;
+import com.atomgraph.client.MediaTypes;
+import jakarta.ws.rs.NotAcceptableException;
 import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.query.ResultSetFactory;
+import org.apache.jena.query.ResultSetRewindable;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.sparql.resultset.SPARQLResult;
 import org.glassfish.jersey.internal.MapPropertiesDelegate;
 import org.glassfish.jersey.server.ContainerRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -129,6 +139,56 @@ public class ProxyRequestFilterTest
 
         assertEquals(1, response.getHeaders().get(HttpHeaders.ETAG).size());
         assertEquals("\"origin\"", response.getHeaderString(HttpHeaders.ETAG));
+    }
+
+    /** A filter answering a request that accepts the given media type, as the proxy does once the upstream has answered */
+    protected ProxyRequestFilter accepting(String accept)
+    {
+        ContainerRequest request = getRequest("http://localhost:8080/?uri=https%3A%2F%2Fremote.example%2Fsparql");
+        request.header(HttpHeaders.ACCEPT, accept);
+        filter.mediaTypes = new MediaTypes();
+        filter.request = request;
+        return filter;
+    }
+
+    @Test
+    public void testBooleanResultIsServedAsBoolean()
+    {
+        try (Response response = accepting("application/sparql-results+json").getResponse(new SPARQLResult(true), Response.Status.OK))
+        {
+            assertEquals(200, response.getStatus());
+            assertTrue(response.getMediaType().isCompatible(MediaType.valueOf("application/sparql-results+json")), response.getMediaType().toString());
+            SPARQLResult entity = (SPARQLResult)response.getEntity();
+            assertTrue(entity.isBoolean() && entity.getBooleanResult());
+        }
+    }
+
+    @Test
+    public void testBooleanResultTagsTellTrueFromFalse()
+    {
+        String trueTag, falseTag;
+        try (Response response = accepting("application/sparql-results+xml").getResponse(new SPARQLResult(true), Response.Status.OK)) { trueTag = response.getHeaderString(HttpHeaders.ETAG); }
+        try (Response response = accepting("application/sparql-results+xml").getResponse(new SPARQLResult(false), Response.Status.OK)) { falseTag = response.getHeaderString(HttpHeaders.ETAG); }
+        assertNotEquals(trueTag, falseTag);
+    }
+
+    /** Jena has no boolean encoding in Protobuf, and HTML has no writer for a boolean: neither is offered */
+    @Test
+    public void testBooleanResultNotOfferedInFormatsWithoutABooleanWriter()
+    {
+        assertThrows(NotAcceptableException.class, () -> accepting("application/x-protobuf+sparql-results").getResponse(new SPARQLResult(true), Response.Status.OK));
+        assertThrows(NotAcceptableException.class, () -> accepting("text/html").getResponse(new SPARQLResult(true), Response.Status.OK));
+    }
+
+    @Test
+    public void testResultSetResultIsServedAsResultSet()
+    {
+        ResultSetRewindable rows = ResultSetFactory.copyResults(QueryExecutionFactory.create("SELECT ?x WHERE { VALUES ?x { 1 2 } }", ModelFactory.createDefaultModel()).execSelect());
+        try (Response response = accepting("application/sparql-results+json").getResponse(new SPARQLResult(rows), Response.Status.OK))
+        {
+            assertEquals(200, response.getStatus());
+            assertTrue(response.getEntity() instanceof ResultSetRewindable, "the result set arm keeps its own response");
+        }
     }
 
     @Test
