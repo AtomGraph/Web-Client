@@ -25,7 +25,7 @@ exclude-result-prefixes="xsl rdf ac">
     <xsl:strip-space elements="*"/>
   
     <!-- only match subjects (i.e. elements that have property children) -->
-    <xsl:key name="resources" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/>
+    <xsl:key name="resources" match="*[*][@rdf:about][not(ancestor::*[@rdf:parseType = 'Literal'])] | *[*][@rdf:nodeID][not(ancestor::*[@rdf:parseType = 'Literal'])]" use="@rdf:about | @rdf:nodeID"/>
 
     <xsl:template match="/" mode="ac:GroupTriples">
         <xsl:copy>

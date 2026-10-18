@@ -44,7 +44,7 @@ exclude-result-prefixes="#all"
     <xsl:output indent="no" omit-xml-declaration="yes" method="text" encoding="UTF-8" media-type="application/ld+json"/>
     <xsl:strip-space elements="*"/>
 
-    <xsl:key name="resources" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/>
+    <xsl:key name="resources" match="*[*][@rdf:about][not(ancestor::*[@rdf:parseType = 'Literal'])] | *[*][@rdf:nodeID][not(ancestor::*[@rdf:parseType = 'Literal'])]" use="@rdf:about | @rdf:nodeID"/>
     
     <xsl:template match="/" mode="ac:JSON-LD">
         <xsl:variable name="json-xml" as="element()">
