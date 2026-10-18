@@ -34,7 +34,7 @@ exclude-result-prefixes="#all"
 
     <!-- http://xml.apache.org/xalan-j/extensions_xsltc.html#java_ext -->
 
-    <xsl:key name="resources-by-subclass" match="*[@rdf:about] | *[@rdf:nodeID]" use="rdfs:subClassOf/@rdf:resource | rdfs:subClassOf/@rdf:nodeID"/>
+    <xsl:key name="resources-by-subclass" match="*[@rdf:about][not(ancestor::*[@rdf:parseType = 'Literal'])] | *[@rdf:nodeID][not(ancestor::*[@rdf:parseType = 'Literal'])]" use="rdfs:subClassOf/@rdf:resource | rdfs:subClassOf/@rdf:nodeID"/>
     
     <!-- the value to show from a set of same-property literals: the first with text in the reader's
          most preferred language, else the first untagged one, else the first of any. Language preference

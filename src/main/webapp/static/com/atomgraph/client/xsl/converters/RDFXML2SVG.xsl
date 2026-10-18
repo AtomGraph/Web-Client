@@ -48,8 +48,8 @@ exclude-result-prefixes="#all">
     <xsl:output method="xml" indent="yes" encoding="UTF-8" media-type="image/svg+xml"/>
     <xsl:strip-space elements="*"/>
 
-    <xsl:key name="resources" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/>
-    <xsl:key name="properties" match="*[@rdf:about or @rdf:nodeID]/*" use="namespace-uri() || local-name()"/>
+    <xsl:key name="resources" match="*[*][@rdf:about][not(ancestor::*[@rdf:parseType = 'Literal'])] | *[*][@rdf:nodeID][not(ancestor::*[@rdf:parseType = 'Literal'])]" use="@rdf:about | @rdf:nodeID"/>
+    <xsl:key name="properties" match="*[@rdf:about or @rdf:nodeID][not(ancestor::*[@rdf:parseType = 'Literal'])]/*" use="namespace-uri() || local-name()"/>
     <xsl:key name="nodes" match="svg:g[svg:circle] | svg:g[svg:rect]" use="svg:circle/local-name() || svg:rect/local-name()"/>
     <xsl:key name="subjects" match="svg:g[@class = 'subject']" use="@about"/>
     <xsl:key name="adjacent-resources" match="svg:g" use="svg:g[@class = 'property']/@resource"/>

@@ -42,7 +42,7 @@ xmlns:url="&java;java.net.URLDecoder"
 xmlns:xhtml="http://www.w3.org/1999/xhtml"
 exclude-result-prefixes="#all">
 
-    <xsl:key name="resources" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/>
+    <xsl:key name="resources" match="*[*][@rdf:about][not(ancestor::*[@rdf:parseType = 'Literal'])] | *[*][@rdf:nodeID][not(ancestor::*[@rdf:parseType = 'Literal'])]" use="@rdf:about | @rdf:nodeID"/>
 
     <!-- LABEL -->
     

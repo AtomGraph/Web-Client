@@ -69,11 +69,11 @@ exclude-result-prefixes="#all">
     <xsl:param name="ac:contentLang" select="'en'" as="xs:string"/>
 
     
-    <xsl:key name="resources" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="@rdf:about | @rdf:nodeID"/>
-    <xsl:key name="predicates" match="*[@rdf:about]/* | *[@rdf:nodeID]/*" use="concat(namespace-uri(), local-name())"/>
-    <xsl:key name="predicates-by-object" match="*[@rdf:about]/* | *[@rdf:nodeID]/*" use="@rdf:resource | @rdf:nodeID"/>
-    <xsl:key name="resources-by-type" match="*[*][@rdf:about] | *[*][@rdf:nodeID]" use="rdf:type/@rdf:resource"/>
-    <xsl:key name="resources-by-defined-by" match="*[@rdf:about]" use="rdfs:isDefinedBy/@rdf:resource"/>
+    <xsl:key name="resources" match="*[*][@rdf:about][not(ancestor::*[@rdf:parseType = 'Literal'])] | *[*][@rdf:nodeID][not(ancestor::*[@rdf:parseType = 'Literal'])]" use="@rdf:about | @rdf:nodeID"/>
+    <xsl:key name="predicates" match="*[@rdf:about][not(ancestor::*[@rdf:parseType = 'Literal'])]/* | *[@rdf:nodeID][not(ancestor::*[@rdf:parseType = 'Literal'])]/*" use="concat(namespace-uri(), local-name())"/>
+    <xsl:key name="predicates-by-object" match="*[@rdf:about][not(ancestor::*[@rdf:parseType = 'Literal'])]/* | *[@rdf:nodeID][not(ancestor::*[@rdf:parseType = 'Literal'])]/*" use="@rdf:resource | @rdf:nodeID"/>
+    <xsl:key name="resources-by-type" match="*[*][@rdf:about][not(ancestor::*[@rdf:parseType = 'Literal'])] | *[*][@rdf:nodeID][not(ancestor::*[@rdf:parseType = 'Literal'])]" use="rdf:type/@rdf:resource"/>
+    <xsl:key name="resources-by-defined-by" match="*[@rdf:about][not(ancestor::*[@rdf:parseType = 'Literal'])]" use="rdfs:isDefinedBy/@rdf:resource"/>
 
     <rdf:Description rdf:about="">
         <foaf:maker rdf:resource="https://atomgraph.com/#company"/>
