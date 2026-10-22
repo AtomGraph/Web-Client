@@ -59,6 +59,12 @@ public class ClientErrorExceptionMapperTest
             }
 
             @Override
+            public HttpHeaders getHttpHeaders()
+            {
+                return request; // Jersey's container request is also the request's HttpHeaders
+            }
+
+            @Override
             public MediaTypes getMediaTypes()
             {
                 return MEDIA_TYPES;
