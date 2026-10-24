@@ -148,6 +148,7 @@ public class ProxyRequestFilterTest
         request.header(HttpHeaders.ACCEPT, accept);
         filter.mediaTypes = new MediaTypes();
         filter.request = request;
+        filter.httpHeaders = request; // Jersey's container request is also the request's HttpHeaders
         return filter;
     }
 

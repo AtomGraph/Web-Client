@@ -124,6 +124,7 @@ public class ProxyRequestFilter implements ContainerRequestFilter
     @Inject MediaTypes mediaTypes;
     @Inject Client client;
     @Context Request request;
+    @Context HttpHeaders httpHeaders;
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException
@@ -366,7 +367,7 @@ public class ProxyRequestFilter implements ContainerRequestFilter
                 new ArrayList<>(),
                 new ArrayList<>());
 
-        return new com.atomgraph.core.model.impl.Response(getRequest(),
+        return new com.atomgraph.core.model.impl.Response(getRequest(), getHttpHeaders(),
                 model,
                 null,
                 new EntityTag(Long.toHexString(ModelUtils.hashModel(model))),
@@ -409,7 +410,7 @@ public class ProxyRequestFilter implements ContainerRequestFilter
                 new ArrayList<>(),
                 new ArrayList<>());
 
-        return new com.atomgraph.core.model.impl.Response(getRequest(),
+        return new com.atomgraph.core.model.impl.Response(getRequest(), getHttpHeaders(),
                 result,
                 null,
                 new EntityTag(Long.toHexString(ResultSetUtils.hashBoolean(result.getBooleanResult()))),
@@ -436,7 +437,7 @@ public class ProxyRequestFilter implements ContainerRequestFilter
                 new ArrayList<>(),
                 new ArrayList<>());
 
-        return new com.atomgraph.core.model.impl.Response(getRequest(),
+        return new com.atomgraph.core.model.impl.Response(getRequest(), getHttpHeaders(),
                 resultSet,
                 null,
                 new EntityTag(Long.toHexString(hash)),
@@ -488,6 +489,11 @@ public class ProxyRequestFilter implements ContainerRequestFilter
     public Request getRequest()
     {
         return request;
+    }
+
+    public HttpHeaders getHttpHeaders()
+    {
+        return httpHeaders;
     }
 
 }

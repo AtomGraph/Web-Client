@@ -26,6 +26,7 @@ import org.apache.jena.vocabulary.RDF;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Request;
 import jakarta.ws.rs.core.Response;
@@ -48,11 +49,12 @@ abstract public class ExceptionMapperBase
 {
 
     @Context private Request request;
+    @Context private HttpHeaders httpHeaders;
     @Context private Providers providers;
     
     @Inject MediaTypes mediaTypes;
     
-    public Resource toResource(Exception ex, Response.Status status, Resource statusResource)
+    public Resource toResource(Exception ex, Response.StatusType status, Resource statusResource)
     {
         if (ex == null) throw new IllegalArgumentException("Exception cannot be null");
         if (status == null) throw new IllegalArgumentException("Response.Status cannot be null");
@@ -60,8 +62,9 @@ abstract public class ExceptionMapperBase
 
         Resource resource = ModelFactory.createDefaultModel().createResource().
                 addProperty(RDF.type, HTTP.Response).
-                addLiteral(HTTP.statusCodeValue, status.getStatusCode()).
-                addLiteral(HTTP.reasonPhrase, status.getReasonPhrase());
+                addLiteral(HTTP.statusCodeValue, status.getStatusCode());
+
+        if (status.getReasonPhrase() != null) resource.addLiteral(HTTP.reasonPhrase, status.getReasonPhrase());
 
         if (statusResource != null) resource.addProperty(HTTP.sc, statusResource);
         if (ex.getMessage() != null) resource.addLiteral(DCTerms.title, ex.getMessage());
@@ -69,13 +72,24 @@ abstract public class ExceptionMapperBase
         return resource;
     }
     
+    /**
+     * Builds the response for an error description.
+     * The variant is negotiated against the writable RDF types; when the request accepts none of them the error is
+     * answered in Turtle, since failing the negotiation would replace the original status with 406 or 500.
+     * 
+     * @param model error description
+     * @return response builder
+     */
     public Response.ResponseBuilder getResponseBuilder(Model model)
     {
-        return new com.atomgraph.core.model.impl.Response(getRequest(),
+        Variant variant = getRequest().selectVariant(getVariants(Model.class));
+        if (variant == null) variant = new Variant(com.atomgraph.core.MediaType.TEXT_TURTLE_TYPE, (Locale)null, null);
+
+        return new com.atomgraph.core.model.impl.Response(getRequest(), getHttpHeaders(),
                 model,
                 null,
                 new EntityTag(Long.toHexString(ModelUtils.hashModel(model))),
-                getVariants(Model.class),
+                variant,
                 new HTMLMediaTypePredicate()).
             getResponseBuilder();
     }
@@ -131,6 +145,11 @@ abstract public class ExceptionMapperBase
     public Request getRequest()
     {
         return request;
+    }
+
+    public HttpHeaders getHttpHeaders()
+    {
+        return httpHeaders;
     }
     
     public Providers getProviders()

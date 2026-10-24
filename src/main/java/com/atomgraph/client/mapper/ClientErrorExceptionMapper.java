@@ -20,24 +20,49 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 import jakarta.ws.rs.ClientErrorException;
+import jakarta.ws.rs.core.HttpHeaders;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import org.apache.jena.rdf.model.Resource;
 
 /**
- *
+ * Maps client errors to an RDF description of the error.
+ * The status and the headers of the exception's response are preserved (for example <code>Allow</code> on 405), with
+ * the exception of the representation metadata, which describes the original entity and not the error description.
+ * 
  * @author Martynas Jusevičius {@literal <martynas@atomgraph.com>}
  */
 @Provider
 public class ClientErrorExceptionMapper extends ExceptionMapperBase implements ExceptionMapper<ClientErrorException>
 {
-    
+
+    /** Headers describing the representation, which the error description replaces. */
+    public static final Set<String> REPRESENTATION_HEADERS;
+    static
+    {
+        Set<String> headers = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        headers.addAll(List.of(HttpHeaders.CONTENT_TYPE, HttpHeaders.CONTENT_LENGTH, HttpHeaders.CONTENT_LANGUAGE,
+            HttpHeaders.CONTENT_ENCODING, HttpHeaders.CONTENT_LOCATION, "Content-Range", HttpHeaders.ETAG,
+            HttpHeaders.LAST_MODIFIED, HttpHeaders.VARY));
+        REPRESENTATION_HEADERS = headers;
+    }
+
     @Override
     public Response toResponse(ClientErrorException ex)
     {
-        Resource exRes = toResource(ex, Response.Status.fromStatusCode(ex.getResponse().getStatus()), null);
+        Response.StatusType status = ex.getResponse().getStatusInfo();
+        Resource exRes = toResource(ex, status, null);
         
-        return getResponseBuilder(exRes.getModel()).
-            status(ex.getResponse().getStatus()).
-            build();
+        Response.ResponseBuilder builder = getResponseBuilder(exRes.getModel()).
+            status(status);
+
+        for (Map.Entry<String, List<Object>> header : ex.getResponse().getHeaders().entrySet())
+            if (!REPRESENTATION_HEADERS.contains(header.getKey()))
+                for (Object value : header.getValue()) builder.header(header.getKey(), value);
+
+        return builder.build();
     }
     
 }
