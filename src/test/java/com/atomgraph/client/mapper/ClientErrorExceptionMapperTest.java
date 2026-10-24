@@ -19,6 +19,7 @@ package com.atomgraph.client.mapper;
 import com.atomgraph.client.MediaTypes;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.ClientErrorException;
+import jakarta.ws.rs.NotAcceptableException;
 import jakarta.ws.rs.NotAllowedException;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Request;
@@ -110,6 +111,16 @@ public class ClientErrorExceptionMapperTest
         Response response = getMapper("GET", "application/sparql-results+json").toResponse(new BadRequestException("No query"));
 
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+        assertTrue(com.atomgraph.core.MediaType.TEXT_TURTLE_TYPE.isCompatible(response.getMediaType()));
+        assertTrue(response.getEntity() instanceof Model);
+    }
+
+    @Test
+    public void testNotAcceptableIsAnswered()
+    {
+        Response response = getMapper("GET", "whatever/whatever").toResponse(new NotAcceptableException());
+
+        assertEquals(Response.Status.NOT_ACCEPTABLE.getStatusCode(), response.getStatus());
         assertTrue(com.atomgraph.core.MediaType.TEXT_TURTLE_TYPE.isCompatible(response.getMediaType()));
         assertTrue(response.getEntity() instanceof Model);
     }
