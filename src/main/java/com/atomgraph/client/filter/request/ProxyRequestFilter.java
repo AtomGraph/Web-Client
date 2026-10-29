@@ -170,6 +170,31 @@ public class ProxyRequestFilter implements ContainerRequestFilter
     }
 
     /**
+     * Returns whether a GET or HEAD response redirects between HTTP and HTTPS, which the connector
+     * does not follow across schemes. A redirect without an absolute Location is relayed as-is.
+     *
+     * @param response upstream response
+     * @param targetURI current upstream URI
+     * @param method request method
+     * @return whether to follow the redirect with a new proxied request
+     */
+    protected boolean isCrossSchemeRedirect(Response response, URI targetURI, String method)
+    {
+        if (!HttpMethod.GET.equalsIgnoreCase(method) && !HttpMethod.HEAD.equalsIgnoreCase(method)) return false;
+
+        Response.Status status = response.getStatusInfo().toEnum();
+        if (status != Response.Status.MOVED_PERMANENTLY && status != Response.Status.SEE_OTHER) return false;
+
+        URI location = response.getLocation();
+        if (location == null || location.getScheme() == null || targetURI.getScheme() == null) return false;
+
+        String targetScheme = targetURI.getScheme();
+        String locationScheme = location.getScheme();
+        return ("http".equalsIgnoreCase(targetScheme) && "https".equalsIgnoreCase(locationScheme)) ||
+            ("https".equalsIgnoreCase(targetScheme) && "http".equalsIgnoreCase(locationScheme));
+    }
+
+    /**
      * Forwards the current request to the target and converts the target's response.
      *
      * @param requestContext the current request context
@@ -198,12 +223,8 @@ public class ProxyRequestFilter implements ContainerRequestFilter
 
             try (clientResponse)
             {
-                // special case for http <-> https 301/303 redirection, which the connector does not follow across schemes
-                if (("GET".equalsIgnoreCase(requestContext.getMethod()) || HttpMethod.HEAD.equalsIgnoreCase(requestContext.getMethod())) &&
-                    (clientResponse.getStatusInfo().toEnum().equals(Response.Status.SEE_OTHER) || clientResponse.getStatusInfo().toEnum().equals(Response.Status.MOVED_PERMANENTLY)) &&
-                    ((target.getUri().getScheme().equals("http") && clientResponse.getLocation().getScheme().equals("https")) ||
-                    (target.getUri().getScheme().equals("https") && clientResponse.getLocation().getScheme().equals("http"))))
-                        return proxy(requestContext, getClient().target(clientResponse.getLocation()));
+                if (isCrossSchemeRedirect(clientResponse, target.getUri(), requestContext.getMethod()))
+                    return proxy(requestContext, getClient().target(clientResponse.getLocation()));
 
                 return getResponse(clientResponse, target.getUri(), requestContext.getMethod());
             }

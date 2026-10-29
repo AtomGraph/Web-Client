@@ -34,6 +34,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -189,6 +190,28 @@ public class ProxyRequestFilterTest
         {
             assertEquals(200, response.getStatus());
             assertTrue(response.getEntity() instanceof ResultSetRewindable, "the result set arm keeps its own response");
+        }
+    }
+
+    @Test
+    public void testCrossSchemeRedirectWithoutLocationIsNotFollowed()
+    {
+        try (Response response = Response.status(Response.Status.MOVED_PERMANENTLY).build())
+        {
+            assertFalse(filter.isCrossSchemeRedirect(response, URI.create("http://remote.example/doc"), "GET"));
+        }
+    }
+
+    @Test
+    public void testCrossSchemeRedirectOnlyFollowsHttpAndHttpsForGetOrHead()
+    {
+        try (Response response = Response.status(Response.Status.SEE_OTHER).
+            location(URI.create("https://remote.example/doc")).build())
+        {
+            assertTrue(filter.isCrossSchemeRedirect(response, URI.create("http://remote.example/doc"), "GET"));
+            assertTrue(filter.isCrossSchemeRedirect(response, URI.create("http://remote.example/doc"), "HEAD"));
+            assertFalse(filter.isCrossSchemeRedirect(response, URI.create("http://remote.example/doc"), "POST"));
+            assertFalse(filter.isCrossSchemeRedirect(response, URI.create("ftp://remote.example/doc"), "GET"));
         }
     }
 
