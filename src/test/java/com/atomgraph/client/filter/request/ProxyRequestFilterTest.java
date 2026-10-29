@@ -82,6 +82,16 @@ public class ProxyRequestFilterTest
     }
 
     @Test
+    public void testResolveTargetURIStripsFragmentWithoutDecodingEscapedPathOrQuery()
+    {
+        URI targetURI = filter.resolveTargetURI(getRequest("http://localhost:8080/?uri=https%3A%2F%2Fremote.example%2Fa%252Fb%3Fx%3Da%2526b%23fragment"));
+
+        assertEquals(URI.create("https://remote.example/a%2Fb?x=a%26b"), targetURI);
+        assertEquals("/a%2Fb", targetURI.getRawPath());
+        assertEquals("x=a%26b", targetURI.getRawQuery());
+    }
+
+    @Test
     public void testOverlayHeadersSplitsCombinedLink()
     {
         // upstream sends one comma-joined Link line; each link-value must come out as its own header

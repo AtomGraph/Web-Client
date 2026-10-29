@@ -26,7 +26,6 @@ import com.atomgraph.core.util.ResultSetUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -156,14 +155,8 @@ public class ProxyRequestFilter implements ContainerRequestFilter
         URI targetURI = URI.create(uriParam);
         if (targetURI.getFragment() != null)
         {
-            try
-            {
-                targetURI = new URI(targetURI.getScheme(), targetURI.getAuthority(), targetURI.getPath(), targetURI.getQuery(), null);
-            }
-            catch (URISyntaxException ex)
-            {
-                // should not happen when only removing the fragment
-            }
+            String rawTarget = targetURI.toString();
+            targetURI = URI.create(rawTarget.substring(0, rawTarget.indexOf('#')));
         }
 
         return targetURI;
