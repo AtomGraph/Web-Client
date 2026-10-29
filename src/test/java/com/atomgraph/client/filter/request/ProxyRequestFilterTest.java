@@ -109,6 +109,21 @@ public class ProxyRequestFilterTest
     }
 
     @Test
+    public void testOverlayHeadersDoesNotSplitQuotedComma()
+    {
+        String first = "<https://remote.example/one>; rel=\"next\"; title=\"a, <b>\"";
+        String second = "<https://remote.example/two>; rel=\"prev\"";
+        Response upstream = Response.ok().header(HttpHeaders.LINK, first + ", " + second).build();
+
+        Response response = filter.overlayHeaders(Response.ok().build(), upstream, true);
+        List<Object> linkValues = response.getHeaders().get(HttpHeaders.LINK);
+
+        assertEquals(2, linkValues.size());
+        assertEquals(first, linkValues.get(0).toString());
+        assertEquals(second, linkValues.get(1).toString());
+    }
+
+    @Test
     public void testOverlayHeadersForwardsEndToEndHeaders()
     {
         Response upstream = Response.ok().
