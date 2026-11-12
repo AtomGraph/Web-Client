@@ -17,7 +17,6 @@
 package com.atomgraph.client.mapper;
 
 import com.atomgraph.client.MediaTypes;
-import com.atomgraph.client.util.HTMLMediaTypePredicate;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
@@ -34,9 +33,7 @@ import jakarta.ws.rs.core.Variant;
 import jakarta.ws.rs.ext.Provider;
 import jakarta.ws.rs.ext.Providers;
 import com.atomgraph.client.vocabulary.HTTP;
-import com.atomgraph.core.util.ModelUtils;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.core.EntityTag;
 import jakarta.ws.rs.core.MediaType;
 
 /**
@@ -76,7 +73,10 @@ abstract public class ExceptionMapperBase
      * Builds the response for an error description.
      * The variant is negotiated against the writable RDF types; when the request accepts none of them the error is
      * answered in Turtle, since failing the negotiation would replace the original status with 406 or 500.
-     * 
+     * The description carries no validators and the request's preconditions are not evaluated against it: they are
+     * about the resource the request targets, not about its error. Evaluated against an entity tag of the description,
+     * an <code>If-Match</code> naming the target's tag failed every time and left the error without its body.
+     *
      * @param model error description
      * @return response builder
      */
@@ -85,13 +85,7 @@ abstract public class ExceptionMapperBase
         Variant variant = getRequest().selectVariant(getVariants(Model.class));
         if (variant == null) variant = new Variant(com.atomgraph.core.MediaType.TEXT_TURTLE_TYPE, (Locale)null, null);
 
-        return new com.atomgraph.core.model.impl.Response(getRequest(), getHttpHeaders(),
-                model,
-                null,
-                new EntityTag(Long.toHexString(ModelUtils.hashModel(model))),
-                variant,
-                new HTMLMediaTypePredicate()).
-            getResponseBuilder();
+        return Response.ok(model, variant); // the mapper sets the error status
     }
 
     /**

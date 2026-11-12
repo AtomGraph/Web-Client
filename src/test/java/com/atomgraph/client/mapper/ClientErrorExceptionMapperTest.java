@@ -27,6 +27,7 @@ import jakarta.ws.rs.core.Response;
 import java.net.URI;
 import java.util.Set;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.vocabulary.DCTerms;
 import org.glassfish.jersey.internal.MapPropertiesDelegate;
 import org.glassfish.jersey.server.ContainerRequest;
 import org.junit.jupiter.api.Test;
@@ -45,11 +46,12 @@ public class ClientErrorExceptionMapperTest
 
     private static final MediaTypes MEDIA_TYPES = new MediaTypes();
 
-    protected ClientErrorExceptionMapper getMapper(String method, String accept)
+    protected ClientErrorExceptionMapper getMapper(String method, String accept, String... headers)
     {
         ContainerRequest request = new ContainerRequest(URI.create("http://localhost:8080/"), URI.create("http://localhost:8080/sparql"),
             method, null, new MapPropertiesDelegate(), null);
         if (accept != null) request.header(HttpHeaders.ACCEPT, accept);
+        for (int i = 0; i + 1 < headers.length; i += 2) request.header(headers[i], headers[i + 1]);
 
         return new ClientErrorExceptionMapper()
         {
@@ -131,6 +133,29 @@ public class ClientErrorExceptionMapperTest
         Response response = getMapper("POST", "text/turtle").toResponse(new ClientErrorException(422));
 
         assertEquals(422, response.getStatus());
+    }
+
+    /** A conditional write names the target's tag, which says nothing about its error: the description is answered. */
+    @Test
+    public void testIfMatchKeepsDescription()
+    {
+        ClientErrorExceptionMapper mapper = getMapper("POST", "application/n-triples", HttpHeaders.IF_MATCH, "\"e9fc5c0efa7b55c67cebebfa5028d37e\"");
+        Response response = mapper.toResponse(new ClientErrorException("Refused", 422));
+
+        assertEquals(422, response.getStatus());
+        assertTrue(response.getEntity() instanceof Model);
+        assertTrue(((Model)response.getEntity()).contains(null, DCTerms.title, "Refused"));
+        assertNull(response.getEntityTag());
+    }
+
+    @Test
+    public void testIfNoneMatchKeepsDescription()
+    {
+        ClientErrorExceptionMapper mapper = getMapper("PUT", "text/turtle", HttpHeaders.IF_NONE_MATCH, "*");
+        Response response = mapper.toResponse(new ClientErrorException("Refused", 422));
+
+        assertEquals(422, response.getStatus());
+        assertTrue(response.getEntity() instanceof Model);
     }
 
 }
