@@ -41,7 +41,7 @@ Stylesheets live in `src/main/webapp/static/com/atomgraph/client/xsl/`. The main
 - `internal-layout.xsl` — for internal graph stores
 - `layout.xsl` — handles RDF-to-HTML transformation, emitting the LinkedDataHub design system's `ac-*` primitives against the vendored kit in `static/com/atomgraph/client/css/`
 
-XSLT extension functions in `writer/function/` (`Construct`, `ConstructForClass`, `UUID`) are registered in `Application.java` and callable from stylesheets.
+The Saxon extension function `ac:uuid()` is implemented by `writer/function/UUID.java` and registered in `Application.java`; other XSLT helpers are defined in the stylesheets. The former `Construct` and `ConstructForClass` extensions are no longer present.
 
 ### Vocabulary / RDF
 
