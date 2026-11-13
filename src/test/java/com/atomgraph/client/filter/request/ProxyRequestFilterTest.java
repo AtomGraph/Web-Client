@@ -34,6 +34,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -81,6 +82,16 @@ public class ProxyRequestFilterTest
     }
 
     @Test
+    public void testResolveTargetURIStripsFragmentWithoutDecodingEscapedPathOrQuery()
+    {
+        URI targetURI = filter.resolveTargetURI(getRequest("http://localhost:8080/?uri=https%3A%2F%2Fremote.example%2Fa%252Fb%3Fx%3Da%2526b%23fragment"));
+
+        assertEquals(URI.create("https://remote.example/a%2Fb?x=a%26b"), targetURI);
+        assertEquals("/a%2Fb", targetURI.getRawPath());
+        assertEquals("x=a%26b", targetURI.getRawQuery());
+    }
+
+    @Test
     public void testOverlayHeadersSplitsCombinedLink()
     {
         // upstream sends one comma-joined Link line; each link-value must come out as its own header
@@ -95,6 +106,21 @@ public class ProxyRequestFilterTest
         assertEquals(2, linkValues.size());
         assertEquals("<https://remote.example/ns#>; rel=https://example.org/ns#ontology", linkValues.get(0).toString());
         assertEquals("<https://remote.example/>; rel=https://example.org/ns#base", linkValues.get(1).toString());
+    }
+
+    @Test
+    public void testOverlayHeadersDoesNotSplitQuotedComma()
+    {
+        String first = "<https://remote.example/one>; rel=\"next\"; title=\"a, <b>\"";
+        String second = "<https://remote.example/two>; rel=\"prev\"";
+        Response upstream = Response.ok().header(HttpHeaders.LINK, first + ", " + second).build();
+
+        Response response = filter.overlayHeaders(Response.ok().build(), upstream, true);
+        List<Object> linkValues = response.getHeaders().get(HttpHeaders.LINK);
+
+        assertEquals(2, linkValues.size());
+        assertEquals(first, linkValues.get(0).toString());
+        assertEquals(second, linkValues.get(1).toString());
     }
 
     @Test
@@ -189,6 +215,28 @@ public class ProxyRequestFilterTest
         {
             assertEquals(200, response.getStatus());
             assertTrue(response.getEntity() instanceof ResultSetRewindable, "the result set arm keeps its own response");
+        }
+    }
+
+    @Test
+    public void testCrossSchemeRedirectWithoutLocationIsNotFollowed()
+    {
+        try (Response response = Response.status(Response.Status.MOVED_PERMANENTLY).build())
+        {
+            assertFalse(filter.isCrossSchemeRedirect(response, URI.create("http://remote.example/doc"), "GET"));
+        }
+    }
+
+    @Test
+    public void testCrossSchemeRedirectOnlyFollowsHttpAndHttpsForGetOrHead()
+    {
+        try (Response response = Response.status(Response.Status.SEE_OTHER).
+            location(URI.create("https://remote.example/doc")).build())
+        {
+            assertTrue(filter.isCrossSchemeRedirect(response, URI.create("http://remote.example/doc"), "GET"));
+            assertTrue(filter.isCrossSchemeRedirect(response, URI.create("http://remote.example/doc"), "HEAD"));
+            assertFalse(filter.isCrossSchemeRedirect(response, URI.create("http://remote.example/doc"), "POST"));
+            assertFalse(filter.isCrossSchemeRedirect(response, URI.create("ftp://remote.example/doc"), "GET"));
         }
     }
 

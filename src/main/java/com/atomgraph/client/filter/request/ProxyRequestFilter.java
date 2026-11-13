@@ -26,11 +26,9 @@ import com.atomgraph.core.util.ResultSetUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Pattern;
 import jakarta.annotation.Priority;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.HttpMethod;
@@ -90,7 +88,6 @@ public class ProxyRequestFilter implements ContainerRequestFilter
 {
 
     private static final Logger log = LoggerFactory.getLogger(ProxyRequestFilter.class);
-    private static final Pattern LINK_SPLITTER = Pattern.compile(",(?=\\s*<)");
     /**
      * End-to-end response headers forwarded verbatim from the upstream. Excludes hop-by-hop headers
      * (RFC 7230 §6.1), framing headers re-emitted by the container, origin-bound security headers
@@ -156,17 +153,36 @@ public class ProxyRequestFilter implements ContainerRequestFilter
         URI targetURI = URI.create(uriParam);
         if (targetURI.getFragment() != null)
         {
-            try
-            {
-                targetURI = new URI(targetURI.getScheme(), targetURI.getAuthority(), targetURI.getPath(), targetURI.getQuery(), null);
-            }
-            catch (URISyntaxException ex)
-            {
-                // should not happen when only removing the fragment
-            }
+            String rawTarget = targetURI.toString();
+            targetURI = URI.create(rawTarget.substring(0, rawTarget.indexOf('#')));
         }
 
         return targetURI;
+    }
+
+    /**
+     * Returns whether a GET or HEAD response redirects between HTTP and HTTPS, which the connector
+     * does not follow across schemes. A redirect without an absolute Location is relayed as-is.
+     *
+     * @param response upstream response
+     * @param targetURI current upstream URI
+     * @param method request method
+     * @return whether to follow the redirect with a new proxied request
+     */
+    protected boolean isCrossSchemeRedirect(Response response, URI targetURI, String method)
+    {
+        if (!HttpMethod.GET.equalsIgnoreCase(method) && !HttpMethod.HEAD.equalsIgnoreCase(method)) return false;
+
+        Response.Status status = response.getStatusInfo().toEnum();
+        if (status != Response.Status.MOVED_PERMANENTLY && status != Response.Status.SEE_OTHER) return false;
+
+        URI location = response.getLocation();
+        if (location == null || location.getScheme() == null || targetURI.getScheme() == null) return false;
+
+        String targetScheme = targetURI.getScheme();
+        String locationScheme = location.getScheme();
+        return ("http".equalsIgnoreCase(targetScheme) && "https".equalsIgnoreCase(locationScheme)) ||
+            ("https".equalsIgnoreCase(targetScheme) && "http".equalsIgnoreCase(locationScheme));
     }
 
     /**
@@ -198,12 +214,8 @@ public class ProxyRequestFilter implements ContainerRequestFilter
 
             try (clientResponse)
             {
-                // special case for http <-> https 301/303 redirection, which the connector does not follow across schemes
-                if (("GET".equalsIgnoreCase(requestContext.getMethod()) || HttpMethod.HEAD.equalsIgnoreCase(requestContext.getMethod())) &&
-                    (clientResponse.getStatusInfo().toEnum().equals(Response.Status.SEE_OTHER) || clientResponse.getStatusInfo().toEnum().equals(Response.Status.MOVED_PERMANENTLY)) &&
-                    ((target.getUri().getScheme().equals("http") && clientResponse.getLocation().getScheme().equals("https")) ||
-                    (target.getUri().getScheme().equals("https") && clientResponse.getLocation().getScheme().equals("http"))))
-                        return proxy(requestContext, getClient().target(clientResponse.getLocation()));
+                if (isCrossSchemeRedirect(clientResponse, target.getUri(), requestContext.getMethod()))
+                    return proxy(requestContext, getClient().target(clientResponse.getLocation()));
 
                 return getResponse(clientResponse, target.getUri(), requestContext.getMethod());
             }
@@ -323,6 +335,38 @@ public class ProxyRequestFilter implements ContainerRequestFilter
         return overlayHeaders(rb.build(), clientResponse, true);
     }
 
+    /** Splits combined Link header values at commas outside URI references and quoted strings. */
+    private static List<String> splitLinkHeader(String header)
+    {
+        List<String> links = new ArrayList<>();
+        int start = 0;
+        boolean insideUri = false;
+        boolean insideQuotedString = false;
+        boolean escaped = false;
+
+        for (int i = 0; i < header.length(); i++)
+        {
+            char current = header.charAt(i);
+            if (insideQuotedString)
+            {
+                if (escaped) escaped = false;
+                else if (current == '\\') escaped = true;
+                else if (current == '\"') insideQuotedString = false;
+            }
+            else if (current == '\"') insideQuotedString = true;
+            else if (current == '<') insideUri = true;
+            else if (current == '>') insideUri = false;
+            else if (current == ',' && !insideUri)
+            {
+                links.add(header.substring(start, i).trim());
+                start = i + 1;
+            }
+        }
+
+        links.add(header.substring(start).trim());
+        return links;
+    }
+
     /**
      * Copies the upstream {@code Link} and end-to-end cache/content headers onto the given
      * built response, replacing any locally stamped values. {@code ETag}/{@code Last-Modified}
@@ -341,8 +385,8 @@ public class ProxyRequestFilter implements ContainerRequestFilter
         // forward all Link headers from the external response so the client receives remote hypermedia
         String linkHeader = clientResponse.getHeaderString(HttpHeaders.LINK);
         if (linkHeader != null)
-            for (String part : LINK_SPLITTER.split(linkHeader))
-                rb.header(HttpHeaders.LINK, part.trim());
+            for (String part : splitLinkHeader(linkHeader))
+                rb.header(HttpHeaders.LINK, part);
 
         for (String name : FORWARDED_RESPONSE_HEADERS)
         {
